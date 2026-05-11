@@ -23,13 +23,10 @@ master_kode = """
         .action-btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
         .action-btn:active { transform: scale(0.98); }
         .hidden { display: none; }
-        
         .control-row { display: flex; gap: 10px; margin: 15px 0; align-items: center; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; flex-wrap: wrap; }
         .ctrl-item { flex: 1; min-width: 120px; }
         .btn-group-tts { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-        
         .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        
         .download-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         hr { border: 0; border-top: 1px dashed #cbd5e1; margin: 20px 0; }
     </style>
@@ -48,13 +45,7 @@ master_kode = """
             <input type="text" id="yt" placeholder="Tempel Link YouTube..." style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:5px;">
             <button class="action-btn" style="background:var(--red)" onclick="mainYT()">📺 MUAT YOUTUBE</button>
             <div id="player" style="margin-top:10px;"></div>
-            
             <button class="action-btn" style="background:var(--teal)" onclick="mulaiSTT()">🎙️ MULAI REKAM SUARA</button>
-            
-            <div style="margin-top:15px; padding:15px; border: 2px dashed var(--teal); border-radius:12px; background:#f0fdfa;">
-                <p style="font-size:12px; margin:0 0 10px 0;"><strong>📂 Unggah Audio (ogg, wav, mp3)</strong></p>
-                <input type="file" id="audioUpload" accept=".mp3, .wav, .ogg" style="width:100%;">
-            </div>
             <textarea id="outSTT" placeholder="Hasil suara atau transkripsi media akan muncul di sini..."></textarea>
         </div>
 
@@ -93,27 +84,21 @@ master_kode = """
                 <button class="action-btn" style="background:var(--purple)" onclick="ringkas()">📝 RINGKAS OTOMATIS</button>
                 <button class="action-btn" style="background:var(--blue)" onclick="buatMindMap()">🌿 BUAT MIND MAP</button>
             </div>
-            <div style="display:flex; gap:10px; margin-top:5px;">
-                <button class="action-btn" style="background:#10a37f; margin:0; font-size:0.75rem;" onclick="window.open('https://chatgpt.com','_blank')">ChatGPT</button>
-                <button class="action-btn" style="background:#4285f4; margin:0; font-size:0.75rem;" onclick="window.open('https://gemini.google.com','_blank')">Gemini</button>
-            </div>
-            <textarea id="outAI" placeholder="Hasil olahan AI (Ringkasan/Mindmap) akan muncul di sini..."></textarea>
+            <textarea id="outAI" placeholder="Hasil olahan AI akan muncul di sini..."></textarea>
         </div>
 
         <div id="save" class="card hidden">
             <h2>💾 Pusat Unduhan</h2>
             <textarea id="final" readonly></textarea>
             <button class="action-btn" style="background:#6366f1" onclick="update()">🔄 REFRESH DATA</button>
-            
             <div class="download-grid">
                 <button class="action-btn" style="background:#10b981" onclick="unduh('txt')">📄 SIMPAN TXT</button>
                 <button class="action-btn" style="background:var(--blue)" onclick="unduh('doc')">📘 SIMPAN WORD</button>
             </div>
             <hr>
-            <button id="btnMP3" class="action-btn" style="background:var(--orange); padding:18px; font-size:1rem;" onclick="unduhAudioReal()">
-                <i class="fas fa-file-audio"></i> UNDUH HASIL AUDIO (MP3/WAV)
+            <button class="action-btn" style="background:var(--orange); padding:18px;" onclick="unduhAudioReal()">
+                <i class="fas fa-file-audio"></i> UNDUH HASIL AUDIO (MP3)
             </button>
-            <p id="statAudio" style="text-align:center; font-size:12px; color:var(--orange); margin-top:10px; font-weight:bold;"></p>
         </div>
     </div>
 
@@ -146,49 +131,36 @@ master_kode = """
             u.rate = document.getElementById('speed').value; 
             u.lang = 'id-ID'; synth.speak(u); 
         }
-        function jeda(){ if(synth.speaking) synth.pause(); }
-        function lanjut(){ if(synth.paused) synth.resume(); }
+        function jeda(){ synth.pause(); }
+        function lanjut(){ synth.resume(); }
         function stop(){ synth.cancel(); }
 
         function ringkas(){
             const t = document.getElementById('outSTT').value || document.getElementById('inTTS').value;
-            if(!t) return alert("Belum ada teks!");
-            document.getElementById('outAI').value = "📝 RINGKASAN MATERI:\n------------------\n" + t.substring(0, 500) + "... [Diringkas Otomatis]";
+            document.getElementById('outAI').value = "📝 RINGKASAN MATERI:\\n" + t.substring(0, 500) + "...";
         }
 
         function buatMindMap(){
             const t = document.getElementById('outSTT').value || document.getElementById('inTTS').value;
-            if(!t) return alert("Belum ada teks!");
-            const keywords = t.split(' ').filter(w => w.length > 5).slice(0, 5);
-            document.getElementById('outAI').value = "🌿 MIND MAP MATERI:\n------------------\nTOPIK UTAMA\n   └── " + keywords.join("\n   └── ");
+            const keywords = t.split(' ').slice(0, 5);
+            document.getElementById('outAI').value = "🌿 MIND MAP MATERI:\\n└── " + keywords.join("\\n└── ");
         }
 
         async function unduhAudioReal() {
             const t = document.getElementById('inTTS').value || document.getElementById('outSTT').value;
-            if(!t) return alert("Teks kosong!");
-            const stat = document.getElementById('statAudio');
-            stat.innerText = "⏳ Sedang memproses file audio...";
-            try {
-                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(t.substring(0,250))}&tl=id&client=tw-ob`;
-                const res = await fetch(url);
-                const blob = await res.blob();
-                const a = document.createElement("a");
-                a.href = URL.createObjectURL(blob);
-                a.download = "Hasil_Narasi.mp3";
-                a.click();
-                stat.innerText = "✅ Berhasil Diunduh!";
-            } catch(e) { window.open(url, '_blank'); stat.innerText = "⚠️ Simpan manual lewat tab baru."; }
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(t.substring(0,250))}&tl=id&client=tw-ob`;
+            window.open(url, '_blank');
         }
 
         function update(){ 
-            const data = "LAPORAN LENGKAP\n===============\n\n[MATERI]\n" + document.getElementById('inTTS').value + "\n\n[STT]\n" + document.getElementById('outSTT').value + "\n\n[AI & MINDMAP]\n" + document.getElementById('outAI').value;
+            const data = "LAPORAN LENGKAP\\n===============\\n\\n[MATERI]\\n" + document.getElementById('inTTS').value + "\\n\\n[STT]\\n" + document.getElementById('outSTT').value + "\\n\\n[AI]\\n" + document.getElementById('outAI').value;
             document.getElementById('final').value = data; 
         }
 
         function unduh(tipe){ 
             update(); 
             const b = new Blob([document.getElementById('final').value], {type:'text/plain'}); 
-            const a = document.createElement("a"); a.href=URL.createObjectURL(b); a.download="Laporan_Cerdas."+tipe; a.click(); 
+            const a = document.createElement("a"); a.href=URL.createObjectURL(b); a.download="Laporan."+tipe; a.click(); 
         }
 
         function loadV(){ const s = document.getElementById("suara"); s.innerHTML = ""; synth.getVoices().forEach((v,i) => { if(v.lang.includes("id")){ let o=document.createElement("option"); o.value=i; o.textContent=v.name; s.appendChild(o); }}); }
@@ -203,5 +175,4 @@ components.html(master_kode, height=1200, scrolling=True)
 
 with st.sidebar:
     st.header("🎓 Final Covenant v17")
-    st.success("SEMUA FITUR AKTIF!")
-    st.write("Suhu telah memastikan Mind Map dan Ringkasan tidak akan hilang lagi.")
+    st.success("APLIKASI AKTIF!")
