@@ -49,25 +49,24 @@ master_kode = """
             <textarea id="outSTT" placeholder="Hasil suara atau transkripsi media akan muncul di sini..."></textarea>
         </div>
 
-        <div id="tts" class="card hidden">
-            <h2>🔊 Kontrol Narasi</h2>
-            <div class="control-row">
-                <div class="ctrl-item" style="flex: 2;">
-                    <label style="font-size:11px;">Pilih Suara</label>
-                    <select id="suara" style="width:100%; padding:8px; border-radius:8px;"></select>
-                </div>
-                <div class="ctrl-item">
-                    <label style="font-size:11px;">Pitch</label>
-                    <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" style="width:100%;">
-                </div>
-                <div class="ctrl-item">
-                    <label style="font-size:11px;">Gaya</label>
-                    <select id="speed" style="width:100%; padding:8px; border-radius:8px;">
-                        <option value="1">Normal</option>
-                        <option value="0.8">Santai</option>
-                        <option value="1.3">Cepat</option>
-                    </select>
-                </div>
+      <div id="ai" class="card hidden">
+            <h2>🤖 Cerdas AI</h2>
+            <div class="ai-grid">
+                <button class="action-btn" style="background:var(--purple)" onclick="ringkas()">📝 RINGKAS OTOMATIS</button>
+                <button class="action-btn" style="background:var(--blue)" onclick="buatMindMap()">🌿 BUAT MIND MAP</button>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="action-btn" style="background:#10a37f; margin:0; font-size:0.8rem;" onclick="window.open('https://chatgpt.com','_blank')">
+                    <i class="fas fa-robot"></i> Tanya ChatGPT
+                </button>
+                <button class="action-btn" style="background:#4285f4; margin:0; font-size:0.8rem;" onclick="window.open('https://gemini.google.com','_blank')">
+                    <i class="fas fa-stars"></i> Tanya Gemini
+                </button>
+            </div>
+            
+            <textarea id="outAI" placeholder="Hasil olahan AI (Ringkasan/Mindmap) akan muncul di sini..."></textarea>
+        </div>
             </div>
             <textarea id="inTTS" placeholder="Ketik materi yang ingin dinarasikan..."></textarea>
             <div class="btn-group-tts">
